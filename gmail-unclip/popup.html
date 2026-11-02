@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      width: 220px;
+      padding: 16px;
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: #ffffff;
+      color: #202124;
+    }
+    h1 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      padding: 8px 12px;
+      background: #e6f4ea;
+      border-radius: 8px;
+      color: #137333;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #137333;
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .hint {
+      margin-top: 12px;
+      font-size: 11px;
+      color: #5f6368;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gmail Trimless</h1>
+  <div class="status">
+    <span class="dot"></span>
+    <span>Active / Aktyvus</span>
+  </div>
+  <p class="hint">
+    Automatically expands trimmed email content in Gmail. Open an email to see it work.
+  </p>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Focus Reader",
+  "version": "1.0.0",
+  "description": "Transform any webpage into a beautiful, distraction-free reading mode with a single click.",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

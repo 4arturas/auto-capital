@@ -1,0 +1,44 @@
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Gradle
+.gradle/
+build/
+!**/build.gradle
+!**/build.gradle.kts
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node modules (if any frontend)
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.*.local

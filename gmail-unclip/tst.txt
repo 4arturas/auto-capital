@@ -1,0 +1,1 @@
+Mūsų kitas žingsnis – kai pamatysi, kad kodas veikia, paruošiu tau planą, kaip šį produktą apmokestinti (prijungti Stripe) ir kaip paleisti reklamą už tuos sutaupytus $2,000, kad pritrauktum pirmuosius mokančius klientus visiškai be tiesioginio bendravimo.
