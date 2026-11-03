@@ -28,6 +28,23 @@ HOW TO USE:
 
 ````
 
+Gumroad Description
+````
+Unlock UNLIMITED row exports in Easy Scraper (Chrome & Edge Extension) with a one-time Lifetime PRO License Key.
+
+WHAT YOU GET:
+• Instant PRO License Key delivered right after checkout.
+• Unlimited rows per export (removes the 15-row free limit).
+• 1-Click CSV file download & 1-Click Copy to Excel / Google Sheets (Ctrl+V).
+• Works on HTML tables, Google Search organic results, and repeating lists.
+• Lifetime updates included — pay once, use forever.
+
+HOW TO ACTIVATE:
+1. Open the Easy Scraper extension in your browser.
+2. Click the Key icon (🔑) in the top right corner.
+3. Paste your License Key and click "✓".
+````
+
 Microsoft:
 https://partner.microsoft.com/en-us/dashboard/microsoftedge/113c6a7b-1968-4d32-8b1a-64e3e7203862/packages
 

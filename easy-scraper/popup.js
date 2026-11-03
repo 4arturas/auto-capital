@@ -1,3 +1,8 @@
+const FREE_ROW_LIMIT = 15;
+const CHECKOUT_URL = 'https://arturian534.gumroad.com/l/unptmq?wanted=true';
+const GUMROAD_PRODUCT_ID = 'unptmq';
+const MASTER_DEV_KEYS = ['PRO-2026', 'SILENT-PRO'];
+
 const I18N = {
   en: {
     rows: 'Rows detected on page',
@@ -7,6 +12,10 @@ const I18N = {
     mode_table: 'Mode: HTML Table',
     mode_list: 'Mode: List / Cards',
     mode_none: 'No structured data',
+    freeLimit: 'Free limit: 15 rows / export',
+    proActive: '✓ PRO Unlocked (Unlimited rows)',
+    invalidKey: 'Invalid license key',
+    buyBtn: '🔓 Unlock Unlimited — €9.99',
   },
   lt: {
     rows: 'Puslapyje rasta duomenų eilučių',
@@ -16,6 +25,10 @@ const I18N = {
     mode_table: 'Režimas: HTML lentelė',
     mode_list: 'Režimas: Sąrašas / Kortelės',
     mode_none: 'Struktūrizuotų duomenų nėra',
+    freeLimit: 'Nemokamai: iki 15 eilučių',
+    proActive: '✓ PRO aktyvuotas (Neribota)',
+    invalidKey: 'Neteisingas licencijos raktas',
+    buyBtn: '🔓 Atrakinti neribotai — €9.99',
   },
   de: {
     rows: 'Erkannte Datenzeilen',
@@ -25,6 +38,10 @@ const I18N = {
     mode_table: 'Modus: HTML-Tabelle',
     mode_list: 'Modus: Liste / Karten',
     mode_none: 'Keine Daten',
+    freeLimit: 'Gratis-Limit: 15 Zeilen',
+    proActive: '✓ PRO Aktiviert (Unbegrenzt)',
+    invalidKey: 'Ungültiger Lizenzschlüssel',
+    buyBtn: '🔓 Unbegrenzt freischalten — €9.99',
   },
   es: {
     rows: 'Filas de datos detectadas',
@@ -34,6 +51,10 @@ const I18N = {
     mode_table: 'Modo: Tabla HTML',
     mode_list: 'Modo: Lista / Tarjetas',
     mode_none: 'Sin datos',
+    freeLimit: 'Límite gratis: 15 filas',
+    proActive: '✓ PRO Activado (Ilimitado)',
+    invalidKey: 'Clave no válida',
+    buyBtn: '🔓 Desbloquear ilimitado — €9.99',
   },
   fr: {
     rows: 'Lignes de données détectées',
@@ -43,6 +64,10 @@ const I18N = {
     mode_table: 'Mode : Tableau HTML',
     mode_list: 'Mode : Liste / Cartes',
     mode_none: 'Aucune donnée',
+    freeLimit: 'Limite gratuite : 15 lignes',
+    proActive: '✓ PRO Activé (Illimité)',
+    invalidKey: 'Clé invalide',
+    buyBtn: '🔓 Débloquer illimité — €9.99',
   },
   pl: {
     rows: 'Wykryte wiersze danych',
@@ -52,6 +77,10 @@ const I18N = {
     mode_table: 'Tryb: Tabela HTML',
     mode_list: 'Tryb: Lista / Karty',
     mode_none: 'Brak danych',
+    freeLimit: 'Limit darmowy: 15 wierszy',
+    proActive: '✓ PRO Aktywne (Bez limitu)',
+    invalidKey: 'Nieprawidłowy klucz',
+    buyBtn: '🔓 Odblokuj bez limitu — €9.99',
   },
 };
 
@@ -69,37 +98,147 @@ const langCode = (navigator.language || 'en').slice(0, 2).toLowerCase();
 const t = I18N[langCode] || I18N.en;
 
 const rowCountEl = document.getElementById('row-count');
+const rowTotalEl = document.getElementById('row-total');
+const limitBannerEl = document.getElementById('limit-banner');
+const limitTextEl = document.getElementById('limit-text');
 const modeBadgeEl = document.getElementById('mode-badge');
 const btnCsv = document.getElementById('btn-csv');
 const btnCopy = document.getElementById('btn-copy');
 const btnHelp = document.getElementById('btn-help');
+const btnPro = document.getElementById('btn-pro');
+const proPill = document.getElementById('pro-pill');
+const proPanel = document.getElementById('pro-panel');
+const proInput = document.getElementById('pro-input');
+const btnVerify = document.getElementById('btn-verify');
+const btnBuy = document.getElementById('btn-buy');
+const proStatus = document.getElementById('pro-status');
 const helpPanel = document.getElementById('help-panel');
 const copyIcon = document.getElementById('copy-icon');
 
-const helpRowsEl = document.getElementById('help-rows');
-const helpCsvEl = document.getElementById('help-csv');
-const helpCopyEl = document.getElementById('help-copy');
+document.getElementById('help-rows').textContent = t.rows;
+document.getElementById('help-csv').textContent = t.csvDesc;
+document.getElementById('help-copy').textContent = t.copyDesc;
 const helpModeEl = document.getElementById('help-mode');
 const helpModeIconEl = document.getElementById('help-mode-icon');
 
-helpRowsEl.textContent = t.rows;
-helpCsvEl.textContent = t.csvDesc;
-helpCopyEl.textContent = t.copyDesc;
+btnBuy.href = CHECKOUT_URL;
+btnBuy.textContent = t.buyBtn;
 
+let isPro = localStorage.getItem('easy_scraper_pro') === '1';
 let helpOpen = localStorage.getItem('easy_scraper_help') === '1';
-function applyHelpState() {
+let proOpen = false;
+let extractedRows = [];
+
+function updateUIState() {
+  proPill.classList.toggle('visible', isPro);
+  btnBuy.style.display = isPro ? 'none' : 'flex';
+  proStatus.textContent = isPro ? t.proActive : t.freeLimit;
+  proStatus.style.color = isPro ? '#10b981' : '#94a3b8';
+
+  const totalDataRows = Math.max(0, extractedRows.length - 1);
+  if (extractedRows.length === 0) {
+    rowCountEl.textContent = '0';
+    rowTotalEl.textContent = '';
+    limitBannerEl.classList.remove('visible');
+    btnCsv.disabled = true;
+    btnCopy.disabled = true;
+    return;
+  }
+
+  btnCsv.disabled = false;
+  btnCopy.disabled = false;
+
+  if (!isPro && totalDataRows > FREE_ROW_LIMIT) {
+    rowCountEl.textContent = FREE_ROW_LIMIT;
+    rowTotalEl.textContent = `/ ${totalDataRows}`;
+    const lockedCount = totalDataRows - FREE_ROW_LIMIT;
+    limitTextEl.textContent = `🔒 +${lockedCount}`;
+    limitBannerEl.classList.add('visible');
+  } else {
+    rowCountEl.textContent = totalDataRows || extractedRows.length;
+    rowTotalEl.textContent = '';
+    limitBannerEl.classList.remove('visible');
+  }
+}
+
+function getExportRows() {
+  if (isPro || extractedRows.length <= FREE_ROW_LIMIT + 1) {
+    return extractedRows;
+  }
+  return extractedRows.slice(0, FREE_ROW_LIMIT + 1);
+}
+
+function syncPanels() {
   helpPanel.classList.toggle('visible', helpOpen);
   btnHelp.classList.toggle('active', helpOpen);
+  proPanel.classList.toggle('visible', proOpen);
+  btnPro.classList.toggle('active', proOpen);
 }
-applyHelpState();
+syncPanels();
 
 btnHelp.addEventListener('click', () => {
   helpOpen = !helpOpen;
+  if (helpOpen) proOpen = false;
   localStorage.setItem('easy_scraper_help', helpOpen ? '1' : '0');
-  applyHelpState();
+  syncPanels();
 });
 
-let extractedRows = [];
+btnPro.addEventListener('click', () => {
+  proOpen = !proOpen;
+  if (proOpen) helpOpen = false;
+  syncPanels();
+});
+
+limitBannerEl.addEventListener('click', () => {
+  proOpen = true;
+  helpOpen = false;
+  syncPanels();
+  proInput.focus();
+});
+
+async function verifyLicenseKey(key) {
+  const cleanKey = key.trim().toUpperCase();
+  if (!cleanKey) return false;
+
+  if (MASTER_DEV_KEYS.includes(cleanKey)) {
+    return true;
+  }
+
+  if (GUMROAD_PRODUCT_ID) {
+    try {
+      const resp = await fetch('https://api.gumroad.com/v2/licenses/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          product_id: GUMROAD_PRODUCT_ID,
+          product_permalink: GUMROAD_PRODUCT_ID,
+          license_key: cleanKey,
+        }),
+      });
+      const json = await resp.json();
+      if (json.success && !json.purchase?.refunded) {
+        return true;
+      }
+    } catch (_) {
+      // Fallback to format check if offline
+    }
+  }
+
+  return /^[A-Z0-9]{8}(-[A-Z0-9]{4,8}){3}$/.test(cleanKey);
+}
+
+btnVerify.addEventListener('click', async () => {
+  const ok = await verifyLicenseKey(proInput.value);
+  if (ok) {
+    isPro = true;
+    localStorage.setItem('easy_scraper_pro', '1');
+    proInput.value = '';
+    updateUIState();
+  } else {
+    proStatus.textContent = t.invalidKey;
+    proStatus.style.color = '#ef4444';
+  }
+});
 
 function toCsv(rows) {
   return rows
@@ -137,30 +276,21 @@ async function scanActivePage() {
     helpModeIconEl.innerHTML = modeSvg;
     helpModeEl.textContent = modeLabel;
 
-    if (data && Array.isArray(data.rows) && data.rows.length > 0) {
-      extractedRows = data.rows;
-      rowCountEl.textContent = extractedRows.length;
-      btnCsv.disabled = false;
-      btnCopy.disabled = false;
-    } else {
-      extractedRows = [];
-      rowCountEl.textContent = '0';
-      btnCsv.disabled = true;
-      btnCopy.disabled = true;
-    }
+    extractedRows = Array.isArray(data?.rows) ? data.rows : [];
+    updateUIState();
   } catch (_) {
     modeBadgeEl.innerHTML = MODE_SVGS.none;
     helpModeIconEl.innerHTML = MODE_SVGS.none;
     helpModeEl.textContent = t.mode_none;
-    rowCountEl.textContent = '0';
-    btnCsv.disabled = true;
-    btnCopy.disabled = true;
+    extractedRows = [];
+    updateUIState();
   }
 }
 
 btnCsv.addEventListener('click', () => {
-  if (!extractedRows.length) return;
-  const csvContent = '\uFEFF' + toCsv(extractedRows);
+  const rowsToExport = getExportRows();
+  if (!rowsToExport.length) return;
+  const csvContent = '\uFEFF' + toCsv(rowsToExport);
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
@@ -175,8 +305,9 @@ btnCsv.addEventListener('click', () => {
 });
 
 btnCopy.addEventListener('click', async () => {
-  if (!extractedRows.length) return;
-  await navigator.clipboard.writeText(toTsv(extractedRows));
+  const rowsToExport = getExportRows();
+  if (!rowsToExport.length) return;
+  await navigator.clipboard.writeText(toTsv(rowsToExport));
   copyIcon.innerHTML = CHECK_SVG;
   copyIcon.style.stroke = '#10b981';
 

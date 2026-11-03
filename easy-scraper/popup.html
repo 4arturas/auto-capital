@@ -5,7 +5,7 @@
   <style>
     * { box-sizing: border-box; }
     body {
-      width: 220px;
+      width: 230px;
       margin: 0;
       padding: 14px;
       background: #14171a;
@@ -22,17 +22,28 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
       font-weight: 700;
       font-size: 13px;
       color: #e2e8f0;
     }
+    .pro-pill {
+      display: none;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #090d16;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 2px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.4px;
+    }
+    .pro-pill.visible { display: inline-block; }
     .header-controls {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
-    .badge, .help-toggle {
+    .badge, .icon-toggle {
       background: #1e293b;
       color: #10b981;
       width: 26px;
@@ -43,7 +54,7 @@
       align-items: center;
       justify-content: center;
     }
-    .help-toggle {
+    .icon-toggle {
       color: #94a3b8;
       border-color: #334155;
       font-weight: 800;
@@ -52,37 +63,70 @@
       padding: 0;
       transition: all 0.15s;
     }
-    .help-toggle:hover {
+    .icon-toggle:hover {
       color: #f8fafc;
       border-color: #64748b;
     }
-    .help-toggle.active {
+    .icon-toggle.active {
       background: #10b981;
       color: #052e16;
       border-color: #10b981;
+    }
+    .icon-toggle.pro-key {
+      color: #fbbf24;
+      border-color: #78350f;
+    }
+    .icon-toggle.pro-key.active {
+      background: #f59e0b;
+      color: #090d16;
+      border-color: #f59e0b;
     }
     .preview-box {
       background: #1e2328;
       border: 1px solid #2d343c;
       border-radius: 10px;
-      padding: 14px 10px;
+      padding: 13px 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 9px;
+      margin-bottom: 10px;
     }
     .count {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 800;
       color: #10b981;
       line-height: 1;
     }
+    .count-total {
+      font-size: 14px;
+      font-weight: 700;
+      color: #64748b;
+    }
     .rows-icon {
       color: #64748b;
-      width: 20px;
-      height: 20px;
+      width: 19px;
+      height: 19px;
     }
+    .limit-banner {
+      display: none;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 7px 10px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid #92400e;
+      border-radius: 8px;
+      color: #fbbf24;
+      font-size: 11px;
+      font-weight: 700;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .limit-banner:hover { background: rgba(245, 158, 11, 0.2); }
+    .limit-banner.visible { display: flex; }
+
     .actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -114,24 +158,80 @@
       border: 1px solid #374151;
     }
     .btn-copy:hover:not(:disabled) { background: #323943; }
-    svg { width: 17px; height: 17px; flex-shrink: 0; }
+    svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-    /* Help Panel (Toggled via ? button) */
+    /* PRO License Panel */
+    .pro-panel {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      background: #1a1f24;
+      border: 1px solid #78350f;
+      border-radius: 8px;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .pro-panel.visible { display: flex; }
+    .pro-input-row {
+      display: flex;
+      gap: 6px;
+    }
+    .pro-input {
+      flex: 1;
+      background: #111417;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 6px 8px;
+      color: #f8fafc;
+      font-size: 11px;
+      font-family: monospace;
+      outline: none;
+    }
+    .pro-input:focus { border-color: #f59e0b; }
+    .btn-verify {
+      background: #f59e0b;
+      color: #090d16;
+      border: none;
+      border-radius: 6px;
+      padding: 0 10px;
+      font-weight: 900;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-buy {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      width: 100%;
+      padding: 7px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #090d16;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .pro-status {
+      font-size: 10px;
+      text-align: center;
+      color: #94a3b8;
+    }
+
+    /* Help Panel */
     .help-panel {
       display: none;
-      margin-top: 12px;
+      margin-top: 10px;
       padding: 10px;
       background: #1a1f24;
       border: 1px solid #2d343c;
       border-radius: 8px;
       font-size: 11px;
       color: #cbd5e1;
-    }
-    .help-panel.visible {
-      display: flex;
       flex-direction: column;
       gap: 7px;
     }
+    .help-panel.visible { display: flex; }
     .help-row {
       display: flex;
       align-items: center;
@@ -162,10 +262,16 @@
       <path d="M3 9h18M3 15h18M12 9v12"/>
     </svg>
     <span>Easy Scraper</span>
+    <span class="pro-pill" id="pro-pill">PRO</span>
   </div>
   <div class="header-controls">
     <div class="badge" id="mode-badge"></div>
-    <button class="help-toggle" id="btn-help">?</button>
+    <button class="icon-toggle pro-key" id="btn-pro">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;">
+        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+      </svg>
+    </button>
+    <button class="icon-toggle" id="btn-help">?</button>
   </div>
 </div>
 
@@ -178,7 +284,16 @@
     <line x1="3" y1="12" x2="3.01" y2="12"/>
     <line x1="3" y1="18" x2="3.01" y2="18"/>
   </svg>
-  <div class="count" id="row-count">...</div>
+  <div>
+    <span class="count" id="row-count">...</span>
+    <span class="count-total" id="row-total"></span>
+  </div>
+</div>
+
+<!-- Shown when page has > 15 rows and user is on Free tier -->
+<div class="limit-banner" id="limit-banner">
+  <span id="limit-text">🔒 +0 rows</span>
+  <span>PRO →</span>
 </div>
 
 <div class="actions">
@@ -199,6 +314,19 @@
   </button>
 </div>
 
+<!-- Toggleable PRO License Panel -->
+<div class="pro-panel" id="pro-panel">
+  <div class="pro-input-row">
+    <input type="text" class="pro-input" id="pro-input" placeholder="XXXX-XXXX-XXXX" />
+    <button class="btn-verify" id="btn-verify">✓</button>
+  </div>
+  <a href="https://gumroad.com" target="_blank" class="btn-buy" id="btn-buy">
+    <span>🔓 Unlimited Rows — PRO</span>
+  </a>
+  <div class="pro-status" id="pro-status">Free limit: 15 rows / page</div>
+</div>
+
+<!-- Toggleable Help Panel -->
 <div class="help-panel" id="help-panel">
   <div class="help-row">
     <div class="help-icon">#</div>
