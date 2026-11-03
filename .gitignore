@@ -38,6 +38,11 @@ Thumbs.db
 node_modules/
 package-lock.json
 
+# Browser data and debug files
+browser_data/
+*.zip
+debug_page.html
+
 # Environment variables
 .env
 .env.local
